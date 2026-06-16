@@ -9,11 +9,14 @@ import os
 
 IMG = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "assets", "img"))
 SS = 4                 # supersample for clean anti-aliased edges
-MARK_H = 0.74          # mark height as a fraction of the icon (a touch larger than wiemansystems.com)
+MARK_H = 0.70          # mark height as a fraction of the icon (a touch larger than wiemansystems.com)
 
-# crop the white mark to its true content bounds (the source has lots of padding)
+# Crop to the SOLID mark only. The source has faint sub-alpha stray pixels in the
+# lower-left that inflate a naive getbbox(), which would shove the real mark
+# up-and-right and shrink it. Threshold the alpha first so we center the true mark.
 _mk = Image.open(os.path.join(IMG, "mark-white.png")).convert("RGBA")
-MARK = _mk.crop(_mk.split()[3].getbbox())
+_solid = _mk.split()[3].point(lambda v: 255 if v > 60 else 0)
+MARK = _mk.crop(_solid.getbbox())
 
 
 def _placed_mark(s):
