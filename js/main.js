@@ -103,27 +103,28 @@
   /* ====================================================================
      HERO TITLE — line rise + text scramble (the signature decode)
      ==================================================================== */
-  var GLYPHS = "!<>-_\\/[]{}=+*#%·▚▞█".split("");
-  function scramble(el, finalText, startDelay) {
+  // Glyph set kept to roughly letter-width characters (no full-width blocks) so
+  // scrambling never changes line wrapping — only the characters flip.
+  var GLYPHS = "!<>-_\\/[]{}=+*#%·:;".split("");
+  function scramble(el, finalText, startDelay, onDone) {
+    // Every slot is filled from the first frame (spaces preserved), so the text
+    // box is full-size immediately and only the glyphs change — no reflow.
     var queue = [];
     for (var i = 0; i < finalText.length; i++) {
-      var start = 4 + Math.floor(Math.random() * 22);
-      var end = start + 8 + Math.floor(Math.random() * 22);
-      queue.push({ to: finalText[i], start: start, end: end, ch: finalText[i] });
+      queue.push({ to: finalText[i], end: 10 + Math.floor(Math.random() * 26),
+                   ch: GLYPHS[Math.floor(Math.random() * GLYPHS.length)] });
     }
     var frame = 0;
     function update() {
       var out = "", done = 0;
       for (var i = 0; i < queue.length; i++) {
         var q = queue[i];
-        if (frame >= q.end) { done++; out += q.to; }
-        else if (frame >= q.start) {
-          if (q.to === " ") { out += " "; }
-          else { if (Math.random() < 0.3) q.ch = GLYPHS[Math.floor(Math.random() * GLYPHS.length)]; out += q.ch; }
-        }
+        if (q.to === " ") { out += " "; done++; continue; }
+        if (frame >= q.end) { out += q.to; done++; }
+        else { if (Math.random() < 0.35) q.ch = GLYPHS[Math.floor(Math.random() * GLYPHS.length)]; out += q.ch; }
       }
       el.textContent = out;
-      if (done === queue.length) { el.textContent = finalText; return; }
+      if (done === queue.length) { el.textContent = finalText; if (onDone) onDone(); return; }
       frame++;
       requestAnimationFrame(update);
     }
@@ -136,16 +137,26 @@
     if (reduce) {
       heroTitle.classList.add("is-in");
     } else {
-      // allow fonts a beat, then play
-      requestAnimationFrame(function () {
-        requestAnimationFrame(function () {
-          heroTitle.classList.add("is-in");
-          scram.forEach(function (el) {
-            var delay = parseInt(el.getAttribute("data-scramble-delay") || "0", 10);
-            scramble(el, el.textContent, 220 + delay);
+      var startScramble = function () {
+        // Reserve the headline's exact rendered box so scrambling can never reflow
+        // the layout — keeps the portrait, canvas and everything else perfectly still.
+        heroTitle.style.height = heroTitle.offsetHeight + "px";
+        heroTitle.style.overflow = "hidden";
+        heroTitle.classList.add("is-in");
+        var remaining = scram.length;
+        scram.forEach(function (el) {
+          var delay = parseInt(el.getAttribute("data-scramble-delay") || "0", 10);
+          scramble(el, el.textContent, 200 + delay, function () {
+            if (--remaining <= 0) { heroTitle.style.height = ""; heroTitle.style.overflow = ""; }
           });
         });
-      });
+      };
+      // Wait for fonts so the reserved height matches the final render (with a
+      // timeout fallback so the headline always appears even if fonts hang).
+      var started = false;
+      var go = function () { if (started) return; started = true; requestAnimationFrame(startScramble); };
+      if (doc.fonts && doc.fonts.ready) doc.fonts.ready.then(go);
+      setTimeout(go, 1200);
     }
   }
 
