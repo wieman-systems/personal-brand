@@ -1,5 +1,9 @@
 .claude/
 tools/
+docs/
 __pycache__/
 *.py
 *.pyc
+
+# Repo docs — keep in git, don't serve them on the live domain
+*.md
