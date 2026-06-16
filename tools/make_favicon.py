@@ -9,7 +9,7 @@ import os
 
 IMG = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "assets", "img"))
 SS = 4                 # supersample for clean anti-aliased edges
-MARK_H = 0.62          # mark height as a fraction of the icon (matches wiemansystems.com)
+MARK_H = 0.74          # mark height as a fraction of the icon (a touch larger than wiemansystems.com)
 
 # crop the white mark to its true content bounds (the source has lots of padding)
 _mk = Image.open(os.path.join(IMG, "mark-white.png")).convert("RGBA")
