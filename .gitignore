@@ -27,3 +27,8 @@ Thumbs.db
 .idea/
 .vscode/
 *.swp
+
+# Local dev / preview tooling
+.claude/
+__pycache__/
+*.pyc
