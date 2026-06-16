@@ -464,6 +464,70 @@
   mountCanvas("heroCanvas", { perspective: true, glyphs: true, maxBarH: 0.32 });
   mountCanvas("ctaCanvas", { perspective: false, glyphs: false, maxBarH: 0.5 });
 
+  /* ====================================================================
+     CONTACT FORM — posts JSON to same-origin /api/contact (Resend relay).
+     Same-origin, so the strict CSP (connect-src 'self') allows the fetch.
+     Native validation + honeypot; graceful success/error states.
+     ==================================================================== */
+  (function () {
+    var form = doc.getElementById("contactForm");
+    if (!form) return;
+    var statusEl = doc.getElementById("cformStatus");
+    var btn = form.querySelector("button[type=submit]");
+    var btnLabel = btn ? btn.querySelector(".btn__label") : null;
+    var sending = false;
+
+    function val(n) { var el = form.elements[n]; return el ? el.value : ""; }
+    function setStatus(msg, kind) {
+      if (!statusEl) return;
+      statusEl.textContent = msg;
+      statusEl.classList.remove("is-ok", "is-error");
+      if (kind) statusEl.classList.add(kind);
+    }
+
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      if (sending) return;
+      if (!form.checkValidity()) { form.reportValidity(); return; }
+
+      var payload = {
+        name: val("name"),
+        email: val("email"),
+        message: val("message"),
+        company: val("company")   // honeypot
+      };
+
+      sending = true;
+      form.classList.add("is-sending");
+      var prevLabel = btnLabel ? btnLabel.textContent : "";
+      if (btnLabel) btnLabel.textContent = "Sending…";
+      setStatus("", null);
+
+      fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      }).then(function (r) {
+        return r.json().catch(function () { return {}; }).then(function (j) {
+          return r.ok && j && j.ok;
+        });
+      }).then(function (ok) {
+        if (ok) {
+          form.reset();
+          setStatus("Message sent — I'll get back to you shortly.", "is-ok");
+        } else {
+          setStatus("Couldn't send that. Email caleb@wiemansystems.com directly.", "is-error");
+        }
+      }).catch(function () {
+        setStatus("Network error. Email caleb@wiemansystems.com directly.", "is-error");
+      }).then(function () {
+        sending = false;
+        form.classList.remove("is-sending");
+        if (btnLabel) btnLabel.textContent = prevLabel || "Send message";
+      });
+    });
+  })();
+
   /* React to a live change in motion preference. */
   mqReduce.addEventListener && mqReduce.addEventListener("change", function (e) {
     if (e.matches) location.reload();

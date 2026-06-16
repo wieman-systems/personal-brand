@@ -370,6 +370,37 @@
             <span class="btn__arrow" aria-hidden="true">→</span>
           </a>
         </div>
+
+        <form class="cform reveal" id="contactForm" action="/api/contact" method="POST" data-reveal-delay="240">
+          <p class="cform__head"><span class="crosshair" aria-hidden="true"></span> Or send a message</p>
+          <div class="cform__grid">
+            <div class="cfield">
+              <label class="cfield__label" for="cf-name">Name</label>
+              <input class="cfield__input" id="cf-name" name="name" type="text" autocomplete="name" maxlength="100" required />
+            </div>
+            <div class="cfield">
+              <label class="cfield__label" for="cf-email">Email</label>
+              <input class="cfield__input" id="cf-email" name="email" type="email" autocomplete="email" maxlength="200" required />
+            </div>
+          </div>
+          <div class="cfield">
+            <label class="cfield__label" for="cf-message">Message</label>
+            <textarea class="cfield__input cfield__area" id="cf-message" name="message" rows="4" maxlength="5000" required></textarea>
+          </div>
+          <!-- honeypot: hidden from people, bots tend to fill it -->
+          <div class="cform__hp" aria-hidden="true">
+            <label for="cf-company">Company</label>
+            <input id="cf-company" name="company" type="text" tabindex="-1" autocomplete="off" />
+          </div>
+          <div class="cform__foot">
+            <button class="btn btn--solid" type="submit" data-magnetic>
+              <span class="btn__label">Send message</span>
+              <span class="btn__arrow" aria-hidden="true">→</span>
+            </button>
+            <p class="cform__status" id="cformStatus" role="status" aria-live="polite"></p>
+          </div>
+        </form>
+
         <ul class="cta__contact reveal" data-reveal-delay="280">
           <li><a href="mailto:caleb@wiemansystems.com">caleb@wiemansystems.com</a></li>
           <li><a href="tel:+14057805207">405&nbsp;780&nbsp;5207</a></li>
