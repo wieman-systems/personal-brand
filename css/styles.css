@@ -1113,6 +1113,29 @@ body.modal-open input, body.modal-open textarea { cursor: text !important; }
 }
 
 /* =========================================================================
+   LEGAL PAGES — privacy / terms (static, CSP-safe: class-based, no inline JS)
+   ========================================================================= */
+.legal { padding-block: clamp(7rem, 12vw, 10rem) clamp(4rem, 8vw, 6rem); }
+.legal__head { max-width: 760px; margin-bottom: clamp(2.5rem, 6vw, 4rem); }
+.legal__title { font-family: var(--font-display); font-weight: 700; letter-spacing: -.02em; line-height: 1.04; font-size: clamp(2.2rem, 6vw, 3.6rem); margin: 1rem 0 .9rem; }
+.legal__stamp { font-family: var(--font-mono); font-size: .74rem; letter-spacing: .04em; color: var(--ink-faint); }
+.legal__lede { color: var(--ink-muted); max-width: 60ch; margin-top: 1.4rem; font-size: clamp(1rem, .98rem + .2vw, 1.125rem); }
+.legal__body { max-width: 760px; display: flex; flex-direction: column; gap: clamp(2.2rem, 5vw, 3.2rem); }
+.legal__section h2 {
+  font-family: var(--font-display); font-weight: 700; letter-spacing: -.01em;
+  font-size: clamp(1.15rem, 2.4vw, 1.5rem); margin-bottom: .85rem; color: var(--ink-strong);
+}
+.legal__section h2 .legal__idx { color: var(--ink-faint); margin-right: .7rem; font-variant-numeric: tabular-nums; }
+.legal__section p { color: var(--ink-muted); margin-bottom: .8rem; max-width: 70ch; }
+.legal__section p:last-child { margin-bottom: 0; }
+.legal__section ul.legal__list { list-style: disc; padding-left: 1.3rem; margin: .4rem 0 0; }
+.legal__section ul.legal__list li { color: var(--ink-muted); margin-bottom: .5rem; max-width: 68ch; }
+.legal__section a { color: var(--ink); border-bottom: 1px solid var(--hairline-strong); }
+.legal__section a:hover { border-color: var(--ink); }
+.legal__back { display: inline-flex; align-items: center; gap: .5rem; margin-top: clamp(2.5rem, 6vw, 3.5rem); font-family: var(--font-mono); font-size: .8rem; letter-spacing: .04em; color: var(--ink-muted); }
+.legal__back:hover { color: var(--ink); }
+
+/* =========================================================================
    REDUCED MOTION — kill switch (must stay last)
    ========================================================================= */
 @media (prefers-reduced-motion: reduce) {
