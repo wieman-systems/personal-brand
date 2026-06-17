@@ -98,13 +98,14 @@ em { font-style: normal; }
   color: var(--ink-muted);
 }
 .eyebrow__sep { color: var(--ink-faint); }
+.eyebrow__idx { color: var(--ink-faint); font-variant-numeric: tabular-nums; }
 
 .section-title {
   font-family: var(--font-display);
-  font-weight: 500;
+  font-weight: 600;
   font-size: clamp(2.1rem, 1.2rem + 4.2vw, 4.25rem);
   line-height: 1;
-  letter-spacing: -.02em;
+  letter-spacing: -.025em;
   color: var(--ink);
 }
 .section-title--sm {
@@ -613,7 +614,7 @@ body.has-cursor .cursor.is-hover { width: 46px; height: 46px; margin: -23px 0 0 
 /* =========================================================================
    SERVICES (bento)
    ========================================================================= */
-.services { padding-block: clamp(5rem, 12vw, 9rem); }
+.services { padding-block: clamp(5rem, 12vw, 9rem); border-top: 1px solid var(--hairline); }
 .bento {
   display: grid;
   grid-template-columns: 1.5fr 1fr;
@@ -630,9 +631,10 @@ body.has-cursor .cursor.is-hover { width: 46px; height: 46px; margin: -23px 0 0 
   padding: clamp(1.8rem, 3.5vw, 3rem);
   display: flex;
   flex-direction: column;
-  gap: 1.4rem;
-  min-height: 240px;
-  transition: background-color .4s var(--ease), transform .4s var(--ease);
+  justify-content: center;   /* content reads as one centered block — no top/bottom hole */
+  gap: 1.6rem;
+  min-height: 220px;
+  transition: background-color .4s var(--ease);
   overflow: hidden;
 }
 .tile::after {
@@ -648,13 +650,16 @@ body.has-cursor .cursor.is-hover { width: 46px; height: 46px; margin: -23px 0 0 
 }
 .tile:hover { background: var(--bg-elev-2); }
 .tile:hover::after { opacity: 1; }
-.tile--flagship { grid-row: span 2; }
-.tile__glyph {
-  font-size: 1.6rem;
-  color: var(--ink-muted);
-  line-height: 1;
-}
-.tile__body { position: relative; z-index: 1; display: flex; flex-direction: column; gap: 1rem; margin-top: auto; }
+/* flagship is the protagonist: one tonal step brighter + denser grid, body bottom-anchored */
+.tile--flagship { grid-row: span 2; justify-content: space-between; background: var(--bg-elev-2); }
+.tile--flagship::after { opacity: .72; }
+.tile--flagship .tile__glyph { color: var(--ink); }
+
+.tile__head { position: relative; z-index: 1; display: flex; align-items: center; justify-content: space-between; }
+.tile__idx { font-family: var(--font-mono); font-size: .72rem; letter-spacing: .16em; color: var(--ink-faint); }
+.tile__glyph { color: var(--ink-muted); line-height: 0; }
+.tile__glyph svg { width: 28px; height: 28px; display: block; }
+.tile__body { position: relative; z-index: 1; display: flex; flex-direction: column; gap: 1rem; }
 .tile__title {
   font-family: var(--font-display);
   font-weight: 500;
@@ -788,6 +793,18 @@ body.has-cursor .cursor.is-hover { width: 46px; height: 46px; margin: -23px 0 0 
   isolation: isolate;
 }
 .cta__canvas { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 0; opacity: .8; }
+/* scrim + vignette so the breathing skyline stays a quiet floor behind the text
+   (mirrors the hero's depth grammar; keeps the contact line crisp) */
+.cta::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(120% 80% at 50% 32%, transparent 34%, var(--bg) 92%),
+    linear-gradient(to top, var(--bg) 5%, transparent 34%);
+}
 .cta__inner { position: relative; z-index: 1; text-align: center; display: flex; flex-direction: column; align-items: center; }
 .cta__inner .eyebrow { margin-bottom: 1.6rem; }
 .cta__title {
@@ -982,6 +999,9 @@ body.modal-open input, body.modal-open textarea { cursor: text !important; }
 .footer__meta { text-align: right; display: flex; flex-direction: column; gap: .4rem; font-family: var(--font-mono); font-size: .74rem; letter-spacing: .04em; }
 .footer__sig { position: absolute; right: var(--gutter); bottom: 1.4rem; }
 
+/* in-page anchor jumps shouldn't land under the fixed nav */
+#hero, #process, #services, #about, #contact, #top { scroll-margin-top: calc(var(--nav-h) + .5rem); }
+
 /* =========================================================================
    RESPONSIVE
    ========================================================================= */
@@ -1004,12 +1024,19 @@ body.modal-open input, body.modal-open textarea { cursor: text !important; }
             mask-image: linear-gradient(to bottom, #000 0%, #000 40%, transparent 92%);
     opacity: .5;
   }
-  .hero__portrait img { object-position: 64% 18%; }
+  .hero__portrait { opacity: .42; }
+  .hero__portrait img { object-position: 62% 10%; }
   .hero__scrim {
     background:
-      linear-gradient(to top, var(--bg) 8%, rgba(10,10,11,.45) 48%, rgba(10,10,11,.7) 100%);
+      linear-gradient(to top, var(--bg) 8%, rgba(10,10,11,.5) 46%, rgba(10,10,11,.84) 100%);
   }
   .hero__title { letter-spacing: -.02em; }
+
+  /* thumb-friendly hit areas (≥44px) on the primary mobile actions */
+  .nav__cta { padding: .8rem 1.2rem; }
+  .link-ghost { min-height: 44px; }
+  .book__close { width: 44px; height: 44px; }
+  .cta__contact a, .footer__nav a { display: inline-flex; align-items: center; min-height: 44px; }
 
   .process__inner { grid-template-columns: 1fr; gap: 2.5rem; }
   .process__sticky { position: static; }
@@ -1025,7 +1052,7 @@ body.modal-open input, body.modal-open textarea { cursor: text !important; }
 
   .footer__inner { grid-template-columns: 1fr; gap: 1.8rem; text-align: center; justify-items: center; }
   .footer__meta { text-align: center; }
-  .footer__sig { display: none; }
+  .footer__sig { position: static; margin: 1.2rem auto 0; }
 }
 
 @media (max-width: 520px) {
@@ -1034,9 +1061,9 @@ body.modal-open input, body.modal-open textarea { cursor: text !important; }
   .proof__cell:first-child { border-top: none; }
   .brand__word { letter-spacing: .18em; font-size: .72rem; }
   .marquee__item { letter-spacing: .1em; }
-  .hero__actions { gap: 1.1rem; }
+  .hero__actions { flex-direction: column; align-items: stretch; gap: 1rem; }
   .btn { width: 100%; justify-content: center; }
-  .hero__actions .btn { width: auto; }
+  .link-ghost { justify-content: center; }
   .cform__grid { grid-template-columns: 1fr; }
 }
 
