@@ -1097,7 +1097,7 @@ body.modal-open input, body.modal-open textarea { cursor: text !important; }
   .footer__inner { grid-template-columns: 1fr; gap: 1.8rem; text-align: center; justify-items: center; }
   .footer__nav, .footer__meta { border-left: none; padding-left: 0; }
   .footer__meta { text-align: center; }
-  .footer__sig { position: static; margin: 1.2rem auto 0; }
+  .footer__sig { position: relative; inset: auto; display: block; width: 10px; margin: 1.2rem auto 0; }
 }
 
 @media (max-width: 520px) {
