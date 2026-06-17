@@ -181,9 +181,10 @@ body.has-cursor .cursor {
   margin: -17px 0 0 -17px;
   z-index: 9600;
   pointer-events: none;
+  opacity: 0;   /* faded in on first pointer move (set in JS) */
   border: 1px solid var(--hairline-strong);
   border-radius: 50%;
-  transition: width .35s var(--ease), height .35s var(--ease),
+  transition: opacity .3s var(--ease), width .35s var(--ease), height .35s var(--ease),
               margin .35s var(--ease), background-color .35s var(--ease),
               border-color .35s var(--ease);
   will-change: transform;
@@ -215,6 +216,7 @@ body.has-cursor .cursor.is-cta::after { opacity: 0; }
 body.has-cursor .cursor.is-cta .cursor__label { opacity: 1; }
 body.has-cursor a:hover ~ .cursor,
 body.has-cursor .cursor.is-hover { width: 46px; height: 46px; margin: -23px 0 0 -23px; }
+body.has-cursor .cursor.is-down { width: 26px; height: 26px; margin: -13px 0 0 -13px; transition-duration: .12s; }
 
 /* =========================================================================
    NAV
@@ -288,6 +290,10 @@ body.has-cursor .cursor.is-hover { width: 46px; height: 46px; margin: -23px 0 0 
 .btn--solid:hover .btn__arrow { transform: translateX(4px); }
 .btn--ghost { background: transparent; color: var(--ink); border-color: var(--hairline-strong); }
 .btn--ghost:hover { border-color: var(--ink); background: rgba(255,255,255,.04); }
+/* press feedback — a quick background shift (magnetic buttons own the transform, so we don't scale) */
+.btn:active { transition-duration: .08s; }
+.btn--solid:active { background: #e6e6e2; }
+.btn--ghost:active { background: rgba(255,255,255,.1); border-color: var(--ink); }
 .btn--lg { padding: 1.15rem 2.2rem; font-size: .88rem; }
 .nav__cta { padding: .6rem 1.1rem; }
 
@@ -655,6 +661,23 @@ body.has-cursor .cursor.is-hover { width: 46px; height: 46px; margin: -23px 0 0 
 .tile--flagship::after { opacity: .72; }
 .tile--flagship .tile__glyph { color: var(--ink); }
 
+/* registration corner ticks — propagate the blueprint motif to the framed cards */
+.process__stage { position: relative; }
+.process__stage::before, .process__stage::after, .tile::before {
+  content: "";
+  position: absolute;
+  width: 8px; height: 8px;
+  z-index: 1;
+  pointer-events: none;
+  opacity: .6;
+  background:
+    linear-gradient(var(--ink-faint), var(--ink-faint)) center / 1px 100% no-repeat,
+    linear-gradient(var(--ink-faint), var(--ink-faint)) center / 100% 1px no-repeat;
+}
+.process__stage::before { top: 10px; left: 10px; }
+.process__stage::after { bottom: 10px; right: 10px; }
+.tile::before { top: 13px; left: 13px; }
+
 .tile__head { position: relative; z-index: 1; display: flex; align-items: center; justify-content: space-between; }
 .tile__idx { font-family: var(--font-mono); font-size: .72rem; letter-spacing: .16em; color: var(--ink-faint); }
 .tile__glyph { color: var(--ink-muted); line-height: 0; }
@@ -963,6 +986,10 @@ body.has-cursor .cursor.is-hover { width: 46px; height: 46px; margin: -23px 0 0 
 .book[open]::backdrop { animation: bookBackdrop .42s ease both; }
 @keyframes bookIn { from { opacity: 0; transform: translateY(10px) scale(.985); } }
 @keyframes bookBackdrop { from { opacity: 0; } }
+/* matching exit (~60% of the entrance) so the modal doesn't snap shut */
+.book.is-closing { animation: bookOut .26s var(--ease) both; }
+.book.is-closing::backdrop { animation: bookBackdrop .26s ease reverse both; }
+@keyframes bookOut { to { opacity: 0; transform: translateY(6px) scale(.99); } }
 
 /* with the modal open, hand control back to the native cursor (the custom cursor
    can't paint above the dialog top layer, and inputs need a text caret) */
@@ -986,7 +1013,8 @@ body.modal-open input, body.modal-open textarea { cursor: text !important; }
   align-items: center;
 }
 .footer__logo { width: 150px; height: auto; opacity: .85; }
-.footer__nav { display: flex; gap: 1.8rem; justify-content: center; flex-wrap: wrap; }
+.footer__nav { display: flex; gap: 1.8rem; justify-content: center; flex-wrap: wrap; border-left: 1px solid var(--hairline); padding-left: clamp(1.5rem, 4vw, 2.5rem); }
+.footer__meta { border-left: 1px solid var(--hairline); padding-left: clamp(1.5rem, 4vw, 2.5rem); }
 .footer__nav a {
   font-family: var(--font-mono);
   font-size: .76rem;
@@ -1001,6 +1029,22 @@ body.modal-open input, body.modal-open textarea { cursor: text !important; }
 
 /* in-page anchor jumps shouldn't land under the fixed nav */
 #hero, #process, #services, #about, #contact, #top { scroll-margin-top: calc(var(--nav-h) + .5rem); }
+
+/* mobile sticky Book-a-call bar — slides in once the hero scrolls away */
+.mobile-cta {
+  position: fixed;
+  left: 0; right: 0; bottom: 0;
+  z-index: 700;
+  display: none;
+  padding: .7rem var(--gutter) calc(.7rem + env(safe-area-inset-bottom, 0px));
+  background: linear-gradient(to top, var(--bg) 62%, transparent);
+  transform: translateY(130%);
+  transition: transform .4s var(--ease);
+  pointer-events: none;
+}
+.mobile-cta .btn { width: 100%; justify-content: center; }
+.mobile-cta.is-visible { transform: none; pointer-events: auto; }
+@media (max-width: 860px) { .mobile-cta { display: block; } }
 
 /* =========================================================================
    RESPONSIVE
@@ -1051,6 +1095,7 @@ body.modal-open input, body.modal-open textarea { cursor: text !important; }
   .fit__cols { grid-template-columns: 1fr; gap: 2.5rem; }
 
   .footer__inner { grid-template-columns: 1fr; gap: 1.8rem; text-align: center; justify-items: center; }
+  .footer__nav, .footer__meta { border-left: none; padding-left: 0; }
   .footer__meta { text-align: center; }
   .footer__sig { position: static; margin: 1.2rem auto 0; }
 }

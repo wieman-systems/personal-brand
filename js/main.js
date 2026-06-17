@@ -68,7 +68,8 @@
      ==================================================================== */
   var nav = doc.getElementById("nav");
   var fill = doc.getElementById("scrollFill");
-  var navScrolled = false;
+  var mcta = doc.getElementById("mobileCta");
+  var navScrolled = false, mctaShown = false;
   addTick(function () {
     var doch = doc.documentElement;
     var max = (doch.scrollHeight - window.innerHeight) || 1;
@@ -78,6 +79,12 @@
     if (s !== navScrolled) {
       navScrolled = s;
       if (nav) nav.classList.toggle("is-scrolled", s);
+    }
+    // mobile sticky CTA: show past the hero, hide near the footer's own CTA
+    if (mcta) {
+      var show = scrollY > window.innerHeight * 0.85 &&
+                 (scrollY + window.innerHeight) < doch.scrollHeight - 560;
+      if (show !== mctaShown) { mctaShown = show; mcta.classList.toggle("is-visible", show); }
     }
   });
 
@@ -111,7 +118,7 @@
     // box is full-size immediately and only the glyphs change — no reflow.
     var queue = [];
     for (var i = 0; i < finalText.length; i++) {
-      queue.push({ to: finalText[i], end: 10 + Math.floor(Math.random() * 26),
+      queue.push({ to: finalText[i], end: 8 + Math.floor(Math.random() * 18),
                    ch: GLYPHS[Math.floor(Math.random() * GLYPHS.length)] });
     }
     var frame = 0;
@@ -168,11 +175,12 @@
   function runCount(el) {
     var target = parseInt(el.getAttribute("data-count"), 10) || 0;
     if (reduce) { el.textContent = target; return; }
-    var dur = 1500, t0 = null;
+    // scale duration to magnitude + easeOutCubic so small counts still travel (one cadence)
+    var dur = clamp(500 + target * 9, 600, 1400), t0 = null;
     function step(ts) {
       if (t0 === null) t0 = ts;
       var p = clamp((ts - t0) / dur, 0, 1);
-      el.textContent = Math.round(easeOutExpo(p) * target);
+      el.textContent = Math.round((1 - Math.pow(1 - p, 3)) * target);
       if (p < 1) requestAnimationFrame(step);
     }
     requestAnimationFrame(step);
@@ -223,7 +231,14 @@
       var label = cursor.querySelector(".cursor__label");
       body.classList.add("has-cursor");
       var mx = window.innerWidth / 2, my = window.innerHeight / 2, px = mx, py = my;
-      window.addEventListener("mousemove", function (e) { mx = e.clientX; my = e.clientY; touch(); }, { passive: true });
+      var cursorShown = false;
+      window.addEventListener("mousemove", function (e) {
+        mx = e.clientX; my = e.clientY;
+        if (!cursorShown) { cursorShown = true; cursor.style.opacity = "1"; } // fade in on first move
+        touch();
+      }, { passive: true });
+      doc.addEventListener("mousedown", function () { cursor.classList.add("is-down"); });
+      doc.addEventListener("mouseup", function () { cursor.classList.remove("is-down"); });
       addTick(function () {
         px = lerp(px, mx, 0.2); py = lerp(py, my, 0.2);
         cursor.style.transform = "translate3d(" + px.toFixed(2) + "px," + py.toFixed(2) + "px,0)";
@@ -547,9 +562,18 @@
       if (first) setTimeout(function () { try { first.focus(); } catch (e2) {} }, 60);
     }
     function close() {
-      body.classList.remove("modal-open");
-      if (dialogOK && modal.open) modal.close();
-      else modal.removeAttribute("open");
+      if (dialogOK && modal.open && !reduce) {
+        modal.classList.add("is-closing");
+        modal.addEventListener("animationend", function h() {
+          modal.classList.remove("is-closing");
+          body.classList.remove("modal-open");
+          modal.close();
+        }, { once: true });
+      } else {
+        body.classList.remove("modal-open");
+        if (dialogOK && modal.open) modal.close();
+        else modal.removeAttribute("open");
+      }
     }
 
     Array.prototype.forEach.call(doc.querySelectorAll("[data-book]"), function (el) {
@@ -561,7 +585,9 @@
     // backdrop click (native dialog: the click target is the dialog itself)
     modal.addEventListener("click", function (e) { if (e.target === modal) close(); });
     // native <dialog> fires 'close' on Esc / .close() — keep body state in sync
-    modal.addEventListener("close", function () { body.classList.remove("modal-open"); });
+    modal.addEventListener("close", function () { body.classList.remove("modal-open"); modal.classList.remove("is-closing"); });
+    // animate the exit on Esc too (cancel fires before the native close)
+    modal.addEventListener("cancel", function (e) { if (!reduce) { e.preventDefault(); close(); } });
     if (!dialogOK) {
       doc.addEventListener("keydown", function (e) {
         if ((e.key === "Escape" || e.keyCode === 27) && modal.hasAttribute("open")) close();
