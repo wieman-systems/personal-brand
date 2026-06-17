@@ -76,9 +76,9 @@
         <a href="#process">Process</a>
         <a href="#services">Services</a>
         <a href="#about">About</a>
-        <a class="btn btn--ghost nav__cta" href="#contact" data-magnetic>
+        <button class="btn btn--ghost nav__cta" type="button" data-magnetic data-book>
           <span class="btn__label">Book a call</span>
-        </a>
+        </button>
       </nav>
     </div>
   </header>
@@ -115,10 +115,10 @@
         </p>
 
         <div class="hero__actions reveal" data-reveal-delay="260">
-          <a class="btn btn--solid" href="#contact" data-magnetic data-cursor="cta">
+          <button class="btn btn--solid" type="button" data-magnetic data-cursor="cta" data-book>
             <span class="btn__label">Book a call</span>
             <span class="btn__arrow" aria-hidden="true">→</span>
-          </a>
+          </button>
           <a class="link-ghost" href="#process">
             See the process <span aria-hidden="true">↓</span>
           </a>
@@ -363,43 +363,11 @@
           A short call to see if there's a system worth building. No pitch, no pressure.
         </p>
         <div class="cta__actions reveal" data-reveal-delay="200">
-          <!-- TODO(caleb): swap href to your Cal.com / Calendly link when ready. -->
-          <a class="btn btn--solid btn--lg" href="mailto:caleb@wiemansystems.com?subject=Booking%20a%20call%20with%20Caleb"
-             data-magnetic data-cursor="cta">
+          <button class="btn btn--solid btn--lg" type="button" data-magnetic data-cursor="cta" data-book>
             <span class="btn__label">Book a call</span>
             <span class="btn__arrow" aria-hidden="true">→</span>
-          </a>
+          </button>
         </div>
-
-        <form class="cform reveal" id="contactForm" action="/api/contact" method="POST" data-reveal-delay="240">
-          <p class="cform__head"><span class="crosshair" aria-hidden="true"></span> Or send a message</p>
-          <div class="cform__grid">
-            <div class="cfield">
-              <label class="cfield__label" for="cf-name">Name</label>
-              <input class="cfield__input" id="cf-name" name="name" type="text" autocomplete="name" maxlength="100" required />
-            </div>
-            <div class="cfield">
-              <label class="cfield__label" for="cf-email">Email</label>
-              <input class="cfield__input" id="cf-email" name="email" type="email" autocomplete="email" maxlength="200" required />
-            </div>
-          </div>
-          <div class="cfield">
-            <label class="cfield__label" for="cf-message">Message</label>
-            <textarea class="cfield__input cfield__area" id="cf-message" name="message" rows="4" maxlength="5000" required></textarea>
-          </div>
-          <!-- honeypot: hidden from people, bots tend to fill it -->
-          <div class="cform__hp" aria-hidden="true">
-            <label for="cf-company">Company</label>
-            <input id="cf-company" name="company" type="text" tabindex="-1" autocomplete="off" />
-          </div>
-          <div class="cform__foot">
-            <button class="btn btn--solid" type="submit" data-magnetic>
-              <span class="btn__label">Send message</span>
-              <span class="btn__arrow" aria-hidden="true">→</span>
-            </button>
-            <p class="cform__status" id="cformStatus" role="status" aria-live="polite"></p>
-          </div>
-        </form>
 
         <ul class="cta__contact reveal" data-reveal-delay="280">
           <li><a href="mailto:caleb@wiemansystems.com">caleb@wiemansystems.com</a></li>
@@ -420,7 +388,7 @@
         <a href="#process">Process</a>
         <a href="#services">Services</a>
         <a href="#about">About</a>
-        <a href="#contact">Book a call</a>
+        <a href="#contact" data-book>Book a call</a>
       </nav>
       <div class="footer__meta">
         <p class="ink-faint">Caleb Wieman · Founder &amp; CEO · Stillwater, OK</p>
@@ -429,6 +397,47 @@
     </div>
     <span class="crosshair footer__sig" aria-hidden="true"></span>
   </footer>
+
+  <!-- ============ BOOK A CALL — modal ============ -->
+  <dialog class="book" id="bookModal" aria-labelledby="bookTitle">
+    <div class="book__panel">
+      <button class="book__close" type="button" data-book-close aria-label="Close">
+        <span class="crosshair" aria-hidden="true"></span>
+      </button>
+      <p class="eyebrow book__eyebrow"><span class="crosshair" aria-hidden="true"></span> Let's map your system</p>
+      <h2 class="book__title" id="bookTitle">Book a call</h2>
+      <p class="book__sub ink-muted">Tell me what you're trying to build — I'll reply within a day.</p>
+
+      <form class="cform" id="contactForm" action="/api/contact" method="POST" novalidate>
+        <div class="cform__grid">
+          <div class="cfield">
+            <label class="cfield__label" for="cf-name">Name</label>
+            <input class="cfield__input" id="cf-name" name="name" type="text" autocomplete="name" maxlength="100" required />
+          </div>
+          <div class="cfield">
+            <label class="cfield__label" for="cf-email">Email</label>
+            <input class="cfield__input" id="cf-email" name="email" type="email" autocomplete="email" maxlength="200" required />
+          </div>
+        </div>
+        <div class="cfield">
+          <label class="cfield__label" for="cf-message">What do you want to build?</label>
+          <textarea class="cfield__input cfield__area" id="cf-message" name="message" rows="4" maxlength="5000" required></textarea>
+        </div>
+        <!-- honeypot: hidden from people, bots tend to fill it -->
+        <div class="cform__hp" aria-hidden="true">
+          <label for="cf-company">Company</label>
+          <input id="cf-company" name="company" type="text" tabindex="-1" autocomplete="off" />
+        </div>
+        <div class="cform__foot">
+          <button class="btn btn--solid" type="submit" data-magnetic>
+            <span class="btn__label">Send request</span>
+            <span class="btn__arrow" aria-hidden="true">→</span>
+          </button>
+          <p class="cform__status" id="cformStatus" role="status" aria-live="polite"></p>
+        </div>
+      </form>
+    </div>
+  </dialog>
 
   <script src="js/main.js" defer></script>
 </body>

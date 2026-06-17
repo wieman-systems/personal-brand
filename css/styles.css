@@ -882,6 +882,83 @@ body.has-cursor .cursor.is-hover { width: 46px; height: 46px; margin: -23px 0 0 
 .cform.is-sending { opacity: .65; pointer-events: none; }
 
 /* =========================================================================
+   BOOK A CALL — modal (native <dialog>: free focus-trap, Esc, a11y)
+   ========================================================================= */
+.book {
+  border: none;
+  padding: 0;
+  background: transparent;
+  color: var(--ink);
+  width: min(560px, 92vw);
+  max-height: 92dvh;
+  margin: auto; /* the global `* { margin: 0 }` reset kills the UA centering — restore it */
+}
+.book:not([open]) { display: none; }
+.book::backdrop {
+  background: rgba(6, 6, 8, .74);
+  -webkit-backdrop-filter: blur(8px) saturate(115%);
+          backdrop-filter: blur(8px) saturate(115%);
+}
+.book__panel {
+  position: relative;
+  border: 1px solid var(--hairline);
+  background:
+    linear-gradient(var(--grid-line) 1px, transparent 1px) 0 0 / 28px 28px,
+    linear-gradient(90deg, var(--grid-line) 1px, transparent 1px) 0 0 / 28px 28px,
+    var(--bg-elev);
+  border-radius: 3px;
+  padding: clamp(1.6rem, 4.5vw, 2.6rem);
+  max-height: 92dvh;
+  overflow: auto;
+}
+.book__eyebrow { margin-bottom: 1.2rem; }
+.book__title {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: clamp(1.9rem, 1.2rem + 2.4vw, 2.7rem);
+  line-height: 1;
+  letter-spacing: -.02em;
+  margin-bottom: .6rem;
+}
+.book__sub { font-size: 1rem; max-width: 42ch; margin-bottom: 1.9rem; }
+/* the .cform card chrome is provided by the panel here, so flatten it */
+.book .cform { border: none; background: none; padding: 0; margin: 0; max-width: none; border-radius: 0; }
+
+.book__close {
+  position: absolute;
+  top: 1rem; right: 1rem;
+  width: 36px; height: 36px;
+  display: grid; place-items: center;
+  border: 1px solid var(--hairline);
+  border-radius: 50%;
+  background: transparent;
+  cursor: pointer;
+  z-index: 2;
+  transition: border-color .3s var(--ease), background-color .3s var(--ease);
+}
+.book__close:hover { border-color: var(--ink); background: rgba(255, 255, 255, .05); }
+.book__close .crosshair { width: 12px; height: 12px; transform: rotate(45deg); }
+.book__close:hover .crosshair::before,
+.book__close:hover .crosshair::after { background: var(--ink); }
+
+/* entry animation (neutralized under prefers-reduced-motion by the kill-switch) */
+.book[open] { animation: bookIn .42s var(--ease) both; }
+.book[open]::backdrop { animation: bookBackdrop .42s ease both; }
+@keyframes bookIn { from { opacity: 0; transform: translateY(10px) scale(.985); } }
+@keyframes bookBackdrop { from { opacity: 0; } }
+
+/* with the modal open, hand control back to the native cursor (the custom cursor
+   can't paint above the dialog top layer, and inputs need a text caret) */
+body.modal-open .cursor { display: none !important; }
+body.modal-open, body.modal-open a, body.modal-open button { cursor: auto !important; }
+body.modal-open input, body.modal-open textarea { cursor: text !important; }
+
+@media (max-width: 520px) {
+  .book .cform__grid { grid-template-columns: 1fr; }
+  .book__close { top: .7rem; right: .7rem; }
+}
+
+/* =========================================================================
    FOOTER
    ========================================================================= */
 .footer { position: relative; border-top: 1px solid var(--hairline); padding-block: clamp(3rem, 6vw, 4.5rem); }

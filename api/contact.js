@@ -13,10 +13,34 @@
 const TO = "caleb@wiemansystems.com";
 const FROM = "Wieman Systems <noreply@wiemansystems.com>";
 
+const ALLOWED_ORIGINS = ["https://calebwieman.com", "https://www.calebwieman.com"];
+function originAllowed(o) {
+  // empty origin = same-origin / server-to-server / curl; allow preview deploys too
+  return !o || ALLOWED_ORIGINS.includes(o) || /^https:\/\/[a-z0-9-]+\.vercel\.app$/.test(o);
+}
+
+// Best-effort in-memory rate limit (per warm instance): 5 sends / 10 min / IP.
+const HITS = new Map();
+function rateLimited(ip) {
+  var now = Date.now(), win = 6e5, arr = (HITS.get(ip) || []).filter(function (t) { return now - t < win; });
+  arr.push(now); HITS.set(ip, arr);
+  if (HITS.size > 5000) HITS.clear();
+  return arr.length > 5;
+}
+
 module.exports = async (req, res) => {
   res.setHeader("Allow", "POST");
   if (req.method !== "POST") {
     return res.status(405).json({ ok: false, error: "Method not allowed" });
+  }
+
+  // CSRF/origin guard — reject genuine cross-site POSTs.
+  if (!originAllowed(req.headers.origin)) {
+    return res.status(403).json({ ok: false, error: "Forbidden" });
+  }
+  var ip = String(req.headers["x-forwarded-for"] || "").split(",")[0].trim() || "unknown";
+  if (rateLimited(ip)) {
+    return res.status(429).json({ ok: false, error: "Too many requests — try again in a few minutes." });
   }
 
   // Vercel parses JSON bodies automatically, but guard for string/empty bodies.

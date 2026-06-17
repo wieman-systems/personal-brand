@@ -528,6 +528,47 @@
     });
   })();
 
+  /* ====================================================================
+     BOOK A CALL — modal open/close (native <dialog>)
+     ==================================================================== */
+  (function () {
+    var modal = doc.getElementById("bookModal");
+    if (!modal) return;
+    var statusEl = doc.getElementById("cformStatus");
+    var dialogOK = typeof modal.showModal === "function";
+
+    function open(e) {
+      if (e) e.preventDefault();
+      if (statusEl) { statusEl.textContent = ""; statusEl.className = "cform__status"; }
+      body.classList.add("modal-open");
+      if (dialogOK) { try { modal.showModal(); } catch (err) { modal.setAttribute("open", ""); } }
+      else modal.setAttribute("open", "");
+      var first = doc.getElementById("cf-name");
+      if (first) setTimeout(function () { try { first.focus(); } catch (e2) {} }, 60);
+    }
+    function close() {
+      body.classList.remove("modal-open");
+      if (dialogOK && modal.open) modal.close();
+      else modal.removeAttribute("open");
+    }
+
+    Array.prototype.forEach.call(doc.querySelectorAll("[data-book]"), function (el) {
+      el.addEventListener("click", open);
+    });
+    Array.prototype.forEach.call(modal.querySelectorAll("[data-book-close]"), function (el) {
+      el.addEventListener("click", close);
+    });
+    // backdrop click (native dialog: the click target is the dialog itself)
+    modal.addEventListener("click", function (e) { if (e.target === modal) close(); });
+    // native <dialog> fires 'close' on Esc / .close() — keep body state in sync
+    modal.addEventListener("close", function () { body.classList.remove("modal-open"); });
+    if (!dialogOK) {
+      doc.addEventListener("keydown", function (e) {
+        if ((e.key === "Escape" || e.keyCode === 27) && modal.hasAttribute("open")) close();
+      });
+    }
+  })();
+
   /* React to a live change in motion preference. */
   mqReduce.addEventListener && mqReduce.addEventListener("change", function (e) {
     if (e.matches) location.reload();
