@@ -14,9 +14,26 @@ const TO = "caleb@wiemansystems.com";
 const FROM = "Wieman Systems <noreply@wiemansystems.com>";
 
 const ALLOWED_ORIGINS = ["https://calebwieman.com", "https://www.calebwieman.com"];
+// Only this project's own preview deploys (personal-brand-*.vercel.app), not
+// any *.vercel.app site an attacker could stand up.
+const PREVIEW_ORIGIN = /^https:\/\/personal-brand-[a-z0-9-]+\.vercel\.app$/;
 function originAllowed(o) {
-  // empty origin = same-origin / server-to-server / curl; allow preview deploys too
-  return !o || ALLOWED_ORIGINS.includes(o) || /^https:\/\/[a-z0-9-]+\.vercel\.app$/.test(o);
+  // A modern browser always sends Origin on a POST, so a real form submission is
+  // covered. Require it to be present and on the allowlist — reject missing/empty
+  // Origin (curl / server-to-server) and any other site.
+  return !!o && (ALLOWED_ORIGINS.includes(o) || PREVIEW_ORIGIN.test(o));
+}
+
+// Trustworthy client IP on Vercel: x-real-ip / x-vercel-forwarded-for are set by
+// the edge and can't be spoofed by the caller, unlike the leftmost
+// x-forwarded-for entry (which the client controls and could rotate to dodge the
+// limiter).
+function clientIp(req) {
+  return (
+    req.headers["x-real-ip"] ||
+    String(req.headers["x-vercel-forwarded-for"] || "").split(",")[0].trim() ||
+    "unknown"
+  );
 }
 
 // Best-effort in-memory rate limit (per warm instance): 5 sends / 10 min / IP.
@@ -38,7 +55,7 @@ module.exports = async (req, res) => {
   if (!originAllowed(req.headers.origin)) {
     return res.status(403).json({ ok: false, error: "Forbidden" });
   }
-  var ip = String(req.headers["x-forwarded-for"] || "").split(",")[0].trim() || "unknown";
+  var ip = clientIp(req);
   if (rateLimited(ip)) {
     return res.status(429).json({ ok: false, error: "Too many requests — try again in a few minutes." });
   }
