@@ -48,8 +48,9 @@ Re-run from the repo root, e.g. `python tools/process_assets.py`.
 
 ## TODO
 
-- [ ] Wire the **Book a call** CTA to a real Cal.com / Calendly link
-      (currently a `mailto:` fallback — see `TODO(caleb)` in `index.html`).
+- [x] Wire up the **Book a call** CTA — shipped as an in-page contact modal
+      (`#bookModal`) that posts to the `api/contact.js` serverless function and
+      relays the message to Caleb via Resend. (Superseded the old `mailto:` fallback.)
 - [ ] Swap the proof-strip numbers for real client metrics once available
       (currently honest, structural facts — see the note in `index.html`).
 - [ ] Point a domain at it and deploy.

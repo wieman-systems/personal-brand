@@ -14,13 +14,21 @@ const TO = "caleb@wiemansystems.com";
 const FROM = "Wieman Systems <noreply@wiemansystems.com>";
 
 const ALLOWED_ORIGINS = ["https://calebwieman.com", "https://www.calebwieman.com"];
-// Only this project's own preview deploys (personal-brand-*.vercel.app), not
-// any *.vercel.app site an attacker could stand up.
-const PREVIEW_ORIGIN = /^https:\/\/personal-brand-[a-z0-9-]+\.vercel\.app$/;
+// This project's own preview deploys only. Vercel preview URLs for the Wieman
+// Systems team carry the team slug just before ".vercel.app" —
+// personal-brand-<hash>-wieman-systems.vercel.app — so we require that
+// "-wieman-systems" suffix. The slug is globally unique on Vercel and can't be
+// re-registered by anyone else, so this rejects a bare personal-brand-*.vercel.app
+// name an attacker could stand up under their own team.
+const PREVIEW_ORIGIN = /^https:\/\/personal-brand-[a-z0-9-]+-wieman-systems\.vercel\.app$/;
 function originAllowed(o) {
-  // A modern browser always sends Origin on a POST, so a real form submission is
-  // covered. Require it to be present and on the allowlist — reject missing/empty
-  // Origin (curl / server-to-server) and any other site.
+  // This is an Origin-header check, not an absolute defense. A browser reliably
+  // sends Origin on a cross-site POST, so genuine cross-site form submissions from
+  // another site are rejected — but a non-browser client (curl / server-to-server)
+  // controls its own Origin header and could spoof an allowed value. The real
+  // backstop against abuse is the rate limiter + honeypot below, not this guard.
+  // Require Origin to be present and on the allowlist — reject missing/empty Origin
+  // (curl / server-to-server with no Origin) and any other site.
   return !!o && (ALLOWED_ORIGINS.includes(o) || PREVIEW_ORIGIN.test(o));
 }
 
