@@ -25,10 +25,16 @@ function originAllowed(o) {
   // This is an Origin-header check, not an absolute defense. A browser reliably
   // sends Origin on a cross-site POST, so genuine cross-site form submissions from
   // another site are rejected — but a non-browser client (curl / server-to-server)
-  // controls its own Origin header and could spoof an allowed value. The real
-  // backstop against abuse is the rate limiter + honeypot below, not this guard.
+  // controls its own Origin header and could spoof an allowed value. The honeypot
+  // and rate limiter below add friction, but the limiter is per-instance (see its
+  // comment), so nothing here is a hard spend control — assume a motivated abuser
+  // gets through and watch the Resend quota.
   // Require Origin to be present and on the allowlist — reject missing/empty Origin
   // (curl / server-to-server with no Origin) and any other site.
+  //
+  // Note: the bare auto-alias personal-brand-rust.vercel.app deliberately does NOT
+  // match, and vercel.json now 308s that host to www rather than serving a copy of
+  // the site with a form that 403s.
   return !!o && (ALLOWED_ORIGINS.includes(o) || PREVIEW_ORIGIN.test(o));
 }
 
@@ -44,7 +50,19 @@ function clientIp(req) {
   );
 }
 
-// Best-effort in-memory rate limit (per warm instance): 5 sends / 10 min / IP.
+// Best-effort in-memory rate limit: 5 sends / 10 min / IP.
+//
+// KNOWN LIMITATION — this counter lives in the module scope of ONE warm Lambda.
+// Vercel runs many concurrent instances and recycles cold ones, so the effective
+// ceiling is 5 sends per 10 min per IP *per instance*, not per IP. A determined
+// flooder who opens parallel connections (or simply waits out a cold start) gets
+// a fresh budget each time. Treat this as friction against casual/naive abuse,
+// NOT as a spend control on the Resend quota.
+//
+// Fixing it properly needs a request-shared store (Vercel KV / Upstash Redis /
+// Supabase). This project has neither — its only env var is RESEND_API_KEY — so
+// adding one is a new dependency + cost decision, deliberately not taken here.
+// Residual risk is documented in SECURITY.md ("Known limitations").
 const HITS = new Map();
 function rateLimited(ip) {
   var now = Date.now(), win = 6e5, arr = (HITS.get(ip) || []).filter(function (t) { return now - t < win; });
