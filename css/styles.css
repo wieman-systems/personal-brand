@@ -3,6 +3,23 @@
    Strict monochrome · architectural · blueprint. No color accents by design.
    ========================================================================= */
 
+/* Portfolio entry points: keep the established homepage visual language. */
+.home-work { padding-top:90px; padding-bottom:90px; }
+.home-work__head { display:flex; align-items:flex-end; justify-content:space-between; gap:25px; margin-bottom:35px; }
+.home-work__head .eyebrow { margin-bottom:18px; }
+.home-work__head .section-title { font-size:clamp(30px,3.5vw,48px); }
+.home-work__head>.link-ghost { white-space:nowrap; font-size:12px; }
+.home-work__grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:24px; }
+.home-work__grid img { width:100%; aspect-ratio:1.55; height:auto; object-fit:cover; border:1px solid #ffffff20; transition:opacity .2s; }
+.home-work__grid>a:nth-child(2) img { object-fit:contain; background:#080809; padding:10px; }
+.home-work__grid>a:nth-child(3) img { object-fit:contain; background:#000; }
+.home-work__grid a:hover img { opacity:.82; }
+.home-work__grid a>div { display:flex; justify-content:space-between; align-items:center; margin-top:18px; }
+.home-work__grid h3 { font:400 24px var(--font-display); letter-spacing:-.035em; }
+.home-work__grid p { font-size:10px; margin-top:6px; color:#a6a6a8; }
+@media(max-width:860px) { .nav__links>a.nav-work { display:block!important; }.home-work { padding-block:60px; }.home-work__head { align-items:flex-start; flex-direction:column; }.home-work__grid { gap:16px; }.home-work__grid h3 { font-size:20px; } }
+@media(max-width:520px) { .nav .nav__cta { display:none; }.nav .nav__links { gap:20px; }.home-work__grid { grid-template-columns:1fr; gap:32px; }.home-work__grid h3 { font-size:25px; }.home-work__grid p { font-size:12px; } }
+
 /* ----- Tokens ----- */
 :root {
   --bg: #0A0A0B;
