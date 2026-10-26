@@ -74,12 +74,18 @@ three-project selected-work section.
   direct hash links, link copying, previous/next controls, Escape dismissal,
   native focus containment, and focus restoration.
 - With JavaScript disabled, native `<details>` keep every explainer readable.
-- Images are actual product/development captures, with simulator and sample-data
-  captions. Private systems use explicitly labeled workflow illustrations.
+- All 24 project entries have authentic interface captures, development images,
+  or original asset-pipeline proofs. Private dashboards are rendered from the
+  original frontend with synthetic records. Captions identify the capture type.
+- Case-study images open at full resolution. Some projects include a second view.
+- The shipping entry shows the related V20 order console, explicitly separated
+  from the older backend-only shipping automation. The email tooling entry shows
+  the related Wieman OS action list using its existing synthetic demo.
 - No client records, credentials, private source, or downloadable game ports
   are included. Historical AIGENTIC entries have no recovered screenshots.
 
 The existing Vercel project has clean URLs enabled, so `work.html` serves at
 `https://www.calebwieman.com/work`. This change does not require new provider
 accounts, dependencies, environment variables, or a build step. Production is
-the `main` branch; the review work is on `feat/portfolio` until approved.
+the `main` branch. Isolated capture fixtures and source copies live outside this
+site repository and are never deployed with it.

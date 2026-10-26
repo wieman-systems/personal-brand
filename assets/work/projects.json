@@ -47,8 +47,8 @@
     "type": "Independent visionOS adaptation",
     "year": "2026",
     "status": "Experimental port",
-    "image": "crank.png",
-    "caption": "Native port development capture · spatial CRT menu",
+    "image": "crank-gameplay.jpg",
+    "caption": "Actual Crank adaptation development capture · machinery and lift",
     "short": "An industrial horror game you operate with your hands.",
     "intro": "A native Apple Vision Pro adaptation of Crank It! that turns the game's machinery into a spatial interaction problem: a lift, physical controls, a CRT console, and the tension of working in a confined industrial space.",
     "built": [
@@ -66,7 +66,9 @@
       "Hand tracking",
       "Spatial audio"
     ],
-    "links": []
+    "links": [],
+    "extraImage": "crank.png",
+    "extraCaption": "Original spatial CRT menu from the native adaptation"
   },
   {
     "id": "wieman-os",
@@ -76,7 +78,7 @@
     "year": "2026",
     "status": "Public product",
     "image": "wieman-os.jpg",
-    "caption": "Actual product interface · synthetic business data",
+    "caption": "Original Wieman OS revenue interface · existing synthetic-data demo",
     "short": "One private console for an independent operator.",
     "intro": "Wieman OS brings the moving pieces of a service business into one workspace: clients, follow-ups, tasks, revenue, connected tools, and an AI copilot. It is designed to run in the owner's hosting and database accounts.",
     "built": [
@@ -104,7 +106,8 @@
         "Open sample-data demo",
         "https://try.wiemansystems.com"
       ]
-    ]
+    ],
+    "imageKind": "interface"
   },
   {
     "id": "poly",
@@ -191,7 +194,10 @@
       "Equipment history",
       "Maintenance view",
       "Reports"
-    ]
+    ],
+    "image": "premier-fleet.jpg",
+    "caption": "Original fleet dashboard rendered locally · synthetic maintenance data",
+    "imageKind": "interface"
   },
   {
     "id": "pixler-hq",
@@ -222,24 +228,28 @@
       "Access prepared",
       "Check-in",
       "Checkout"
-    ]
+    ],
+    "image": "pixler-hq.jpg",
+    "caption": "Original rental command center rendered locally · synthetic stays",
+    "imageKind": "interface"
   },
   {
     "id": "shipping-automation",
-    "name": "Shipping Automation",
+    "name": "Shipping & Order Operations",
     "category": "systems",
-    "type": "Operational automation · Plasma Bionics",
+    "type": "Operational tools · Plasma Bionics",
     "year": "2026",
-    "status": "Private operational work",
-    "short": "From an incoming order to a shipping workflow.",
-    "intro": "Shipping automation developed during my work with Plasma Bionics, connecting the order and fulfillment process so repetitive shipping preparation could happen through software.",
+    "status": "Private automation + prototype",
+    "short": "From incoming orders to fulfillment and tracking.",
+    "intro": "Operational software developed during my work with Plasma Bionics: an earlier WooCommerce-to-UPS shipping workflow, and a related order-management console for viewing orders, fulfillment, tracking, and customer links.",
     "built": [
       "An order-to-fulfillment workflow linking WooCommerce orders with UPS shipping.",
-      "Automation around the repeated steps of preparing and processing outgoing orders."
+      "Automation around the repeated steps of preparing and processing outgoing orders.",
+      "A companion order-management interface with an open-order queue, shipment tracking, and links to customer organizations."
     ],
     "why": "Re-entering the same information across systems creates work without adding value. This project connected the tools around the actual fulfillment process.",
-    "role": "Workflow implementation and shipping-service integration during my work with Plasma Bionics.",
-    "note": "Private operational work. No customer orders, credentials, or internal implementation details are published here.",
+    "role": "Shipping-service integration and operational workflow implementation, plus order-management interface development.",
+    "note": "The image shows the related V20 order-management console rendered locally with synthetic orders. The earlier WooCommerce-to-UPS automation was a separate workflow with no standalone dashboard.",
     "stack": [
       "WooCommerce",
       "UPS",
@@ -251,7 +261,10 @@
       "Order prepared",
       "UPS shipping",
       "Fulfillment"
-    ]
+    ],
+    "image": "shipping-orders.jpg",
+    "caption": "Companion V20 order console · synthetic orders; separate from the earlier shipping script",
+    "imageKind": "interface"
   },
   {
     "id": "v20-platform",
@@ -282,7 +295,10 @@
       "Telemetry",
       "Fleet view",
       "Operator"
-    ]
+    ],
+    "image": "v20-platform.jpg",
+    "caption": "Original V20 fleet interface rendered locally · synthetic device telemetry",
+    "imageKind": "interface"
   },
   {
     "id": "covenant",
@@ -313,7 +329,12 @@
       "Code-based math",
       "Scenario results",
       "Narrative"
-    ]
+    ],
+    "image": "covenant.jpg",
+    "caption": "Original loan-modeling workspace · built-in sample deal",
+    "imageKind": "interface",
+    "extraImage": "covenant-projection.jpg",
+    "extraCaption": "Five-year cash-flow projection in the original workspace · sample deal"
   },
   {
     "id": "pioneer-timer",
@@ -349,7 +370,10 @@
       "Start",
       "Record splits",
       "Export results"
-    ]
+    ],
+    "image": "pioneer-timer.jpg",
+    "caption": "Original timing interface rendered locally · fictional runners",
+    "imageKind": "interface"
   },
   {
     "id": "ghost-piston",
@@ -385,7 +409,12 @@
       "Engine model",
       "Audio synthesis",
       "Sound + HUD"
-    ]
+    ],
+    "image": "ghost-piston.jpg",
+    "caption": "Original audio dashboard · local interface capture with audio and GPS disabled",
+    "imageKind": "interface",
+    "extraImage": "ghost-piston-engines.jpg",
+    "extraCaption": "Original engine-preset library · local interface capture"
   },
   {
     "id": "librequake",
@@ -449,7 +478,9 @@
       "Choose experience",
       "Native session",
       "Return to hub"
-    ]
+    ],
+    "image": "development-hub.jpg",
+    "caption": "Native Development launcher · cropped visionOS simulator capture"
   },
   {
     "id": "restless-dream",
@@ -507,7 +538,9 @@
       "Spatial controls",
       "Story progression",
       "Immersive scene"
-    ]
+    ],
+    "image": "hunting.jpg",
+    "caption": "Actual game-development capture · local desktop preview of the adaptation"
   },
   {
     "id": "total-chaos",
@@ -538,7 +571,9 @@
       "Stereo rendering",
       "Spatial controls",
       "Session recovery"
-    ]
+    ],
+    "image": "total-chaos.jpg",
+    "caption": "Native rendering test from the adaptation · simulator eye capture"
   },
   {
     "id": "buckshot",
@@ -600,7 +635,11 @@
       "Validated specification",
       "Asset assembly",
       "Living habitat"
-    ]
+    ],
+    "image": "wildworld.jpg",
+    "caption": "Procedural creature proof render from the original asset pipeline",
+    "extraImage": "wildworld-assets.jpg",
+    "extraCaption": "Environment texture and vegetation proofs from the original procedural asset pipeline"
   },
   {
     "id": "ou-after-dark",
@@ -665,7 +704,8 @@
       "Inquiry"
     ],
     "image": "apex.jpg",
-    "caption": "Apex website concept · browser capture"
+    "caption": "Apex website concept · browser capture",
+    "imageKind": "interface"
   },
   {
     "id": "wieman-websites",
@@ -707,7 +747,8 @@
       "Contact"
     ],
     "image": "personal-brand.jpg",
-    "caption": "Personal brand homepage · browser capture"
+    "caption": "Personal brand homepage · browser capture",
+    "imageKind": "interface"
   },
   {
     "id": "email-agents",
@@ -725,7 +766,7 @@
     ],
     "why": "The value of an agent is often in remembering the small things reliably, then giving the operator enough context to make the decision.",
     "role": "Workflow design, integrations, and internal tooling.",
-    "note": "Internal experiments with changing runtimes and connections. This is not a claim that every historical agent is still running or that messages send without review.",
+    "note": "The screenshot shows inbox actions in the related Wieman OS console using its synthetic-data demo. Earlier email-watch tools ran separately; the image does not establish that a historical agent is currently running.",
     "stack": [
       "Email APIs",
       "AI agents",
@@ -738,7 +779,10 @@
       "Triage",
       "Draft / action",
       "Human review"
-    ]
+    ],
+    "image": "email-agents.jpg",
+    "caption": "Wieman OS inbox actions · existing synthetic-data demo",
+    "imageKind": "interface"
   },
   {
     "id": "client-toolkit",
@@ -756,7 +800,7 @@
     ],
     "why": "Good foundations let the next project spend more time on the client's actual problem.",
     "role": "Tooling, templates, workflow design, and ongoing refinement.",
-    "note": "Internal infrastructure supporting the public work. Client-specific data and credentials are excluded.",
+    "note": "The original setup-guide template is shown with an example client and account-specific fields removed. This internal toolkit supports the wider project collection.",
     "stack": [
       "Templates",
       "Automation",
@@ -769,6 +813,9 @@
       "Project foundation",
       "Build",
       "Handoff"
-    ]
+    ],
+    "image": "client-toolkit.jpg",
+    "caption": "Original client setup-guide template · example client; account details removed",
+    "imageKind": "interface"
   }
 ]

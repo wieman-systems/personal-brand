@@ -10,11 +10,13 @@ categories = {'spatial': 'Spatial computing', 'systems': 'Systems & AI', 'websit
 def image(p, extra=False):
     key = 'extraImage' if extra else 'image'
     cap = p.get('extraCaption' if extra else 'caption', '')
-    return f'<figure class="case-figure"><img src="/assets/work/{esc(p[key])}" alt="{esc(cap)}" loading="lazy" width="1600" height="900"><figcaption>{esc(cap)}</figcaption></figure>'
+    src=f'/assets/work/{esc(p[key])}'
+    return f'<figure class="case-figure"><a class="case-image-link" href="{src}" target="_blank" rel="noopener" aria-label="Open full-size image: {esc(cap)}"><img src="{src}" alt="{esc(cap)}" loading="lazy" width="1600" height="900"></a><figcaption><span>{esc(cap)}</span><a href="{src}" target="_blank" rel="noopener">Open full-size ↗</a></figcaption></figure>'
 
 def visual(p, idx):
     if p.get('image'):
-        return f'<div class="project-visual project-visual--{p["id"]}"><img src="/assets/work/{esc(p["image"])}" alt="{esc(p["caption"])}" loading="lazy" width="1600" height="900"><span class="visual-label">{esc(p["status"])}</span></div>'
+        fit=' project-visual--interface' if p.get('imageKind')=='interface' else ''
+        return f'<div class="project-visual project-visual--{p["id"]}{fit}"><img src="/assets/work/{esc(p["image"])}" alt="{esc(p["caption"])}" loading="lazy" width="1600" height="900"><span class="visual-label">{esc(p["status"])}</span></div>'
     steps = ''.join(f'<span><i>{i+1:02}</i>{esc(x)}</span>' for i,x in enumerate(p.get('diagram', [])))
     return f'<div class="project-visual project-visual--diagram" aria-label="Workflow illustration"><span class="diagram-index">{idx:02} / BUILD NOTES</span><div class="workflow">{steps}</div><span class="visual-label">Workflow illustration</span></div>'
 
@@ -92,5 +94,5 @@ html=f'''<!DOCTYPE html>
 <dialog class="case-dialog" id="case-dialog" aria-labelledby="case-dialog-title"><div class="case-toolbar"><span class="small-label">PROJECT EXPLORER</span><div><button type="button" id="copy-project">Copy project link <span aria-hidden="true">↗</span></button><button type="button" id="close-project" aria-label="Close project">Close <span aria-hidden="true">×</span></button></div></div><div id="case-content"></div><div class="case-navigation"><button type="button" id="previous-project">← Previous project</button><span id="case-position" class="small-label"></span><button type="button" id="next-project">Next project →</button></div><p id="copy-status" role="status" class="copy-status"></p></dialog>
 {contact}
 </body></html>'''
-(ROOT/'work.html').write_text(html)
+(ROOT/'work.html').write_text('\n'.join(line.rstrip() for line in html.splitlines())+'\n')
 print(f'Built work.html with {len(projects)} projects and {len(legacy)} historical entries.')
