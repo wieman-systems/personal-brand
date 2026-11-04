@@ -68,6 +68,8 @@ Run `npm ci --ignore-scripts`, `npm test`, and `npm run build`. Confirm both pag
 load `/js/bot-protection.js` before `main.js`. On a deployed build, a valid-looking
 JSON submission with a spoofed allowed Origin but no browser proof must return
 403; repeated empty JSON requests must hit the WAF limit without sending mail.
+The WAF deny action responds with 403 and `x-vercel-mitigated: deny` (not 429);
+the form recognizes that response and shows the ten-minute retry guidance.
 Verify a normal browser request passes BotID before asserting the form works.
 
 Vercel OIDC is required by the SDK and is enabled for this project. Keep the

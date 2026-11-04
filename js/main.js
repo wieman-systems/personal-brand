@@ -529,13 +529,20 @@
         body: JSON.stringify(payload)
       }).then(function (r) {
         return r.json().catch(function () { return {}; }).then(function (j) {
-          return { ok: r.ok && j && j.ok, status: r.status, code: j.code };
+          return {
+            ok: r.ok && j && j.ok,
+            status: r.status,
+            code: j.code,
+            // Vercel's WAF rate-limit deny action returns 403, not 429.
+            rateLimited: r.status === 429 ||
+              (r.status === 403 && r.headers.get("x-vercel-mitigated") === "deny")
+          };
         });
       }).then(function (result) {
         if (result.ok) {
           form.reset();
           setStatus("Message sent — I'll get back to you shortly.", "is-ok");
-        } else if (result.status === 429) {
+        } else if (result.rateLimited) {
           setStatus("Too many attempts. Please wait ten minutes, then try again, or email caleb@wiemansystems.com directly.", "is-error");
         } else if (result.code === "verification_failed" || result.status === 403) {
           setStatus("Browser verification failed. Reload this page and try again, or email caleb@wiemansystems.com directly.", "is-error");
