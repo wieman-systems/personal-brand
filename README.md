@@ -4,11 +4,11 @@ Personal brand landing page for **Caleb Wieman** — Founder & CEO of Wieman Sys
 Built to build trust and showcase modern AI systems work.
 
 > Strict-monochrome, architectural, blueprint aesthetic. Premium, interactive, fast.
-> Single static page — no framework, no build step.
+> Static pages with a small build step for contact-form bot protection.
 
 ## Stack
 
-- **Plain HTML / CSS / vanilla JS** — deploys anywhere (Vercel, GitHub Pages, Netlify, any static host)
+- **Plain HTML / CSS / vanilla JS** — hosted on Vercel; the protected contact API uses Vercel BotID and WAF
 - Generative `<canvas>` blueprint + data-city skyline hero
 - Text-scramble headline, scroll-reveal choreography, pinned Map→Build→Run scene,
   count-up metrics, magnetic CTA, custom registration-mark cursor — all hand-rolled
@@ -26,12 +26,17 @@ tools/                # one-off asset-pipeline scripts (Python / Pillow)
 
 ## Run locally
 
-Any static server works:
+Build the public assets, then preview them with a static server:
 
 ```bash
-python -m http.server 8000
+npm ci --ignore-scripts
+npm run build
+python -m http.server 8000 --directory dist
 # then open http://localhost:8000
 ```
+
+The contact API requires Vercel and does not send from this static preview.
+Run `npm test` for the isolated server and form tests.
 
 Append `?still` to the URL to render a static, motion-free frame (handy for screenshots
 and identical to the reduced-motion experience).
@@ -53,7 +58,7 @@ Re-run from the repo root, e.g. `python tools/process_assets.py`.
       relays the message to Caleb via Resend. (Superseded the old `mailto:` fallback.)
 - [ ] Swap the proof-strip numbers for real client metrics once available
       (currently honest, structural facts — see the note in `index.html`).
-- [ ] Point a domain at it and deploy.
+- [x] Deploy at https://www.calebwieman.com.
 
 ## Brand
 
@@ -85,9 +90,8 @@ three-project selected-work section.
   are included. Historical AIGENTIC entries have no recovered screenshots.
 
 The existing Vercel project has clean URLs enabled, so `work.html` serves at
-`https://www.calebwieman.com/work`. This change does not require new provider
-accounts, dependencies, environment variables, or a build step. Production is
-the `main` branch. Isolated capture fixtures and source copies live outside this
+`https://www.calebwieman.com/work`. Production follows the `main` branch.
+The site build bundles BotID and copies public assets to `dist`. Isolated capture fixtures and source copies live outside this
 site repository and are never deployed with it.
 
 ## Contact form protection
