@@ -17,8 +17,9 @@ A machine-readable contact is published at
 
 ## Scope
 
-This repository serves a single static marketing page (HTML/CSS/vanilla JS)
-hosted on Vercel. There is no backend, database, user accounts, or API.
+This repository serves the public portfolio and a contact-form endpoint on
+Vercel. The endpoint sends plain-text mail only to `caleb@wiemansystems.com`;
+it does not expose a database, mailbox, or customer accounts.
 
 ## Hardening
 
@@ -43,22 +44,47 @@ Preview/branch deploys (`personal-brand-*-wieman-systems.vercel.app`) are
 intentionally NOT redirected, so they remain testable, and `api/contact.js`
 accepts their Origin.
 
+## Contact-form protection
+
+- BotID Basic protects `POST /api/contact` in the browser on both `/` and `/work`.
+  The server independently validates the challenge response, rejects bots,
+  verified crawlers, and bypass results, and fails closed on verification errors.
+  The SDK's development bypass is explicitly disabled. Paid Deep Analysis is not enabled.
+- A Vercel WAF rule limits contact POSTs to **5 attempts per IP per 600-second
+  fixed window**. The canonical rule is `config/contact-firewall.json`; deploy it
+  through the Vercel Firewall API for this project, separately from the code.
+  It covers the normal path, trailing slash, and `.js` alias. The WAF counter is
+  shared across function instances and survives deployments/cold starts.
+- Origin allowlisting remains a browser CSRF guard, not authentication. JSON
+  content type, input/body limits, and the honeypot remain additional filters.
+- Server errors do not log message contents, challenge proofs, API keys, or raw
+  provider responses. The email recipient and sender are fixed server-side.
+- The static build publishes only the public pages/assets into `dist`, excluding
+  server code, dependency files, operational configuration, and tests.
+
+## Operational verification
+
+Run `npm ci --ignore-scripts`, `npm test`, and `npm run build`. Confirm both pages
+load `/js/bot-protection.js` before `main.js`. On a deployed build, a valid-looking
+JSON submission with a spoofed allowed Origin but no browser proof must return
+403; repeated empty JSON requests must hit the WAF limit without sending mail.
+Verify a normal browser request passes BotID before asserting the form works.
+
+Vercel OIDC is required by the SDK and is enabled for this project. Keep the
+firewall rule active and verify it after any hosting migration. Git rollback
+alone does not change the separately deployed firewall configuration.
+
 ## Known limitations
 
-**The contact-form rate limiter is not a real spend control.**
-`api/contact.js` throttles 5 sends / 10 min / IP using an in-memory `Map`. That
-map lives in a single warm Lambda instance; Vercel runs many instances
-concurrently and recycles cold ones, so the limit is effectively *per instance*,
-not per IP. Parallel requests or a cold start each get a fresh budget.
+Vercel WAF counters are **per region**, not a hard worldwide sending quota. A
+fixed window also permits a burst across a window boundary. Rotating IPs or
+regions can increase aggregate volume; sophisticated browser automation may
+pass BotID Basic. These protections substantially reduce casual automated abuse
+but do not establish a guaranteed Resend spending cap. Monitor provider usage;
+add a global quota if needed. Visitors behind the same public IP share a limit.
 
-Enforcing this properly requires a store shared across invocations (Vercel KV,
-Upstash Redis, or Supabase). This project has no such store — its only
-environment variable is `RESEND_API_KEY` — so the fix is a new dependency and a
-new recurring cost, not a code change, and has deliberately not been taken.
+If browser verification is blocked or unavailable, the form fails closed and
+shows a direct email fallback. It never silently sends without verification.
 
-Accepted residual risk: an attacker who spoofs an allowed `Origin` header from a
-non-browser client can burn Resend send quota and flood
-`caleb@wiemansystems.com`. Impact is bounded — the endpoint reads no data and
-exposes nothing; the worst case is inbox noise and a consumed sending quota. If
-quota burn is ever observed, add the shared store rather than tightening the
-in-memory counter, which cannot be made correct.
+References: [BotID](https://vercel.com/docs/botid),
+[WAF rate limiting](https://vercel.com/docs/vercel-firewall/vercel-waf/rate-limiting).

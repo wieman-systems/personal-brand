@@ -4,13 +4,23 @@
   "redirects": [
     {
       "source": "/",
-      "has": [{ "type": "host", "value": "personal-brand-rust.vercel.app" }],
+      "has": [
+        {
+          "type": "host",
+          "value": "personal-brand-rust.vercel.app"
+        }
+      ],
       "destination": "https://www.calebwieman.com/",
       "permanent": true
     },
     {
       "source": "/:path*",
-      "has": [{ "type": "host", "value": "personal-brand-rust.vercel.app" }],
+      "has": [
+        {
+          "type": "host",
+          "value": "personal-brand-rust.vercel.app"
+        }
+      ],
       "destination": "https://www.calebwieman.com/:path*",
       "permanent": true
     }
@@ -49,5 +59,8 @@
         }
       ]
     }
-  ]
+  ],
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
+  "installCommand": "npm ci --ignore-scripts"
 }

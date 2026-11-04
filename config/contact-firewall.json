@@ -1,0 +1,36 @@
+{
+  "id": "rule_contact_form_five_attempts_per_ten_minutes_bBec8r",
+  "name": "Contact form: five attempts per ten minutes",
+  "description": "Shared Vercel edge counter, keyed by client IP; all contact POST aliases. Counters are per region, not per function instance.",
+  "active": true,
+  "conditionGroup": [
+    {
+      "conditions": [
+        {
+          "type": "path",
+          "op": "re",
+          "value": "^/api/contact(?:/|\\.js)?$"
+        },
+        {
+          "type": "method",
+          "op": "eq",
+          "value": "POST"
+        }
+      ]
+    }
+  ],
+  "action": {
+    "mitigate": {
+      "action": "rate_limit",
+      "rateLimit": {
+        "algo": "fixed_window",
+        "window": 600,
+        "limit": 5,
+        "keys": [
+          "ip"
+        ],
+        "action": "deny"
+      }
+    }
+  }
+}

@@ -89,3 +89,11 @@ The existing Vercel project has clean URLs enabled, so `work.html` serves at
 accounts, dependencies, environment variables, or a build step. Production is
 the `main` branch. Isolated capture fixtures and source copies live outside this
 site repository and are never deployed with it.
+
+## Contact form protection
+
+The contact form uses Vercel BotID Basic and a shared Vercel WAF rate limit.
+See `SECURITY.md` for deployment requirements, verification, and limitations.
+Install with `npm ci --ignore-scripts`, test with `npm test`, and build with
+`npm run build`. Vercel serves the generated `dist` folder alongside `api/contact.js`.
+The server-only `RESEND_API_KEY` stays in Vercel environment settings.

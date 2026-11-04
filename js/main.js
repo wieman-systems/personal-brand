@@ -482,7 +482,7 @@
   /* ====================================================================
      CONTACT FORM — posts JSON to same-origin /api/contact (Resend relay).
      Same-origin, so the strict CSP (connect-src 'self') allows the fetch.
-     Native validation + honeypot; graceful success/error states.
+     BotID browser verification, validation, and clear retry/error states.
      ==================================================================== */
   (function () {
     var form = doc.getElementById("contactForm");
@@ -504,6 +504,10 @@
       e.preventDefault();
       if (sending) return;
       if (!form.checkValidity()) { form.reportValidity(); return; }
+      if (!window.wiemanBotProtectionReady) {
+        setStatus("Browser verification didn't load. Reload this page or email caleb@wiemansystems.com directly.", "is-error");
+        return;
+      }
 
       var payload = {
         name: val("name"),
@@ -513,6 +517,7 @@
       };
 
       sending = true;
+      if (btn) btn.disabled = true;
       form.classList.add("is-sending");
       var prevLabel = btnLabel ? btnLabel.textContent : "";
       if (btnLabel) btnLabel.textContent = "Sending…";
@@ -524,19 +529,26 @@
         body: JSON.stringify(payload)
       }).then(function (r) {
         return r.json().catch(function () { return {}; }).then(function (j) {
-          return r.ok && j && j.ok;
+          return { ok: r.ok && j && j.ok, status: r.status, code: j.code };
         });
-      }).then(function (ok) {
-        if (ok) {
+      }).then(function (result) {
+        if (result.ok) {
           form.reset();
           setStatus("Message sent — I'll get back to you shortly.", "is-ok");
+        } else if (result.status === 429) {
+          setStatus("Too many attempts. Please wait ten minutes, then try again, or email caleb@wiemansystems.com directly.", "is-error");
+        } else if (result.code === "verification_failed" || result.status === 403) {
+          setStatus("Browser verification failed. Reload this page and try again, or email caleb@wiemansystems.com directly.", "is-error");
+        } else if (result.status === 503) {
+          setStatus("The contact form is temporarily unavailable. Please try later or email caleb@wiemansystems.com directly.", "is-error");
         } else {
-          setStatus("Couldn't send that. Email caleb@wiemansystems.com directly.", "is-error");
+          setStatus("Couldn't confirm delivery. Email caleb@wiemansystems.com directly if you don't hear back.", "is-error");
         }
       }).catch(function () {
         setStatus("Network error. Email caleb@wiemansystems.com directly.", "is-error");
       }).then(function () {
         sending = false;
+        if (btn) btn.disabled = false;
         form.classList.remove("is-sending");
         if (btnLabel) btnLabel.textContent = prevLabel || "Send message";
       });
